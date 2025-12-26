@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prevent_Reverse_Order_Status</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  ISCHANGED(Status__c),
+  ISPICKVAL(Status__c, &quot;Draft&quot;),
+  TEXT(PRIORVALUE(Status__c)) = &quot;Activated&quot;,
+  Invoice_Count__c &gt; 0
+)</errorConditionFormula>
+    <errorMessage>You cannot revert an Order to Draft once invoices have been created.</errorMessage>
+</ValidationRule>
