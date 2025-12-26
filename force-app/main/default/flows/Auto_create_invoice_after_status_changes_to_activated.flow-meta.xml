@@ -2,6 +2,25 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Take_Action</name>
+        <label>Take Action</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Invoice exists</defaultConnectorLabel>
+        <rules>
+            <name>Invoice_does_not_exist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Invoices.Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>Status_changes_to_Activated_Auto_create_Invoice</targetReference>
+            </connector>
+            <label>Invoice does not exist</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>Auto create invoice after status changes to activated {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Auto create invoice after status changes to activated</label>
@@ -56,11 +75,32 @@
         <object>Invoice__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
+    <recordLookups>
+        <name>Get_Related_Invoices</name>
+        <label>Get Related Invoices</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Take_Action</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Order__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Invoice__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Status_changes_to_Activated_Auto_create_Invoice</targetReference>
+            <targetReference>Get_Related_Invoices</targetReference>
         </connector>
         <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
         <filterLogic>and</filterLogic>
